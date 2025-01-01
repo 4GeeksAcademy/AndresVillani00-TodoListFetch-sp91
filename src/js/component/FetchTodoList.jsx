@@ -16,22 +16,25 @@ export const FetchTodoList = () => {
             label: tarea,
             is_done: false
         };
-        const uri = `${host}/todos/${user}`;
-        const options = {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(tareaNueva)
-        };
-        
-        const response = await fetch(uri, options);
-        if(!response.ok){
-            console.log('Error: ', response.status, response.statusText);
-            return
-        }
+        if(tareaNueva.label.trim() != ''){
+            const uri = `${host}/todos/${user}`;
+            const options = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(tareaNueva)
+            };
+            
+            const response = await fetch(uri, options);
+            if(!response.ok){
+                console.log('Error: ', response.status, response.statusText);
+                return
+            }
 
-        getTareas();
+            setTarea('')
+            getTareas();
+        }
     }
 
     const handleSubmitEdit = async (event) => {
@@ -104,59 +107,62 @@ export const FetchTodoList = () => {
     }, [])
 
     return (
-        <div className="container my-5 p-5">
-            {
-                form === true ?
-                <form onSubmit={handleSubmitTarea}>
-                    <div className="mb-3">
-                        <label>Add Task</label>
-                        <input onChange={(event) => setTarea(event.target.value)} value={tarea} className="form-control" type="text" />
-                    </div>
-                </form>
-                :
-                <form onSubmit={handleSubmitEdit}>
-                    <div className="mb-3">
-                        <label className="form-control-label" htmlFor="setTask">Edit Task</label>
-                        <input onChange={(event) => setLabel(event.target.value)} value={label} className="form-control" type="text" id="setTask" />
-                    </div>
-                    <div className="form-check mb-3">
-                        <input onChange={(event) => setCheck(event.target.checked)} checked={check} className="form-check-input" type="checkbox" id="setCheck" />
-                        <label className="form-check-label" htmlFor="setCheck">Completed</label>
-                    </div>
-                    <button type="submit" className="btn btn-primary me-2">Submit</button>
-                    <button type="reset" onClick={() => setForm(true)} className="btn btn-secondary">Cancel</button>
-                </form>
-            }
-            <div className="list-group my-5">
-                <h2 className="text-center">Listado de Tareas</h2>
-                <ul className="list-group">
-                    {tareas.map((item) => 
-                        <li key={item.id} className="list-group-item d-flex justify-content-between">
-                            <div>
-                                {
-                                    item.is_done ?
-                                    <span className="text-success me-2">
-                                        <i className="fa-solid fa-circle-check"></i>
+        <div className="Container">
+            <h1 className="text-center">Todo List con Fetch</h1>
+                <div className="container my-5 p-5">
+                    {
+                    form === true ?
+                    <form onSubmit={handleSubmitTarea}>
+                        <div className="mb-3">
+                            <label>Add Task</label>
+                            <input onChange={(event) => setTarea(event.target.value)} value={tarea} className="form-control" type="text" />
+                        </div>
+                    </form>
+                    :
+                    <form onSubmit={handleSubmitEdit}>
+                        <div className="mb-3">
+                            <label className="form-control-label" htmlFor="setTask">Edit Task</label>
+                            <input onChange={(event) => setLabel(event.target.value)} value={label} className="form-control" type="text" id="setTask" />
+                        </div>
+                        <div className="form-check mb-3">
+                            <input onChange={(event) => setCheck(event.target.checked)} checked={check} className="form-check-input" type="checkbox" id="setCheck" />
+                            <label className="form-check-label" htmlFor="setCheck">Completed</label>
+                        </div>
+                        <button type="submit" className="btn btn-primary me-2">Submit</button>
+                        <button type="reset" onClick={() => setForm(true)} className="btn btn-secondary">Cancel</button>
+                    </form>
+                }
+                <div className="list-group my-5">
+                    <h2 className="text-center">Listado de Tareas</h2>
+                    <ul className="list-group">
+                        {tareas.map((item) => 
+                            <li key={item.id} className="list-group-item d-flex justify-content-between">
+                                <div>
+                                    {
+                                        item.is_done ?
+                                        <span className="text-success me-2">
+                                            <i className="fa-solid fa-circle-check"></i>
+                                        </span>
+                                        :
+                                        <span className="text-danger me-2">
+                                            <i className="fa-solid fa-circle-xmark"></i>
+                                        </span>
+                                    }
+                                    {item.label}
+                                </div>
+                                <div>
+                                    <span onClick={() => handleEdit(item)} className="text-primary me-2">
+                                        <i className="fa-solid fa-pen-to-square"></i>
                                     </span>
-                                    :
-                                    <span className="text-danger me-2">
-                                        <i className="fa-solid fa-circle-xmark"></i>
+                                    <span onClick={() => handleDelete(item)} className="text-danger">
+                                        <i className="fa-solid fa-trash-can"></i>
                                     </span>
-                                }
-                                {item.label}
-                            </div>
-                            <div>
-                                <span onClick={() => handleEdit(item)} className="text-primary me-2">
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                </span>
-                                <span onClick={() => handleDelete(item)} className="text-danger">
-                                    <i className="fa-solid fa-trash-can"></i>
-                                </span>
-                            </div>
-                        </li>
-                    )}
-                    <li className="list-group-item text-end">{tareas.length === 0 ? 'No tasks, pleases add a new task' : (tareas.length === 1 ? `1 Task` : `${tareas.length} Tasks`)}</li>
-                </ul>
+                                </div>
+                            </li>
+                        )}
+                        <li className="list-group-item text-end">{tareas.length === 0 ? 'No tasks, pleases add a new task' : (tareas.length === 1 ? `1 Task` : `${tareas.length} Tasks`)}</li>
+                    </ul>
+                </div>
             </div>
         </div>
     );
